@@ -36,47 +36,12 @@ async function run() {
       res.json(furnitures);
     });
 
-    // get single car
+    // get single furniture
     app.get("/furnitures/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const furniture = await furnituresCollection.findOne(query);
       res.json(furniture);
-    });
-
-    // get orders
-    app.get("/orders", async (req, res) => {
-      const cursor = ordersCollection.find({});
-      const result = await cursor.toArray();
-      res.json(result);
-    });
-
-    // get reviews
-    app.get("/reviews", async (req, res) => {
-      const cursor = reviewsCollection.find({});
-      const result = await cursor.toArray();
-      res.json(result);
-    });
-
-    // get filtered orders
-    app.get("/orders/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const cursor = ordersCollection.find(query);
-      const result = await cursor.toArray();
-      res.json(result);
-    });
-
-    // get admin user
-    app.get("/users/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const user = await usersCollection.findOne(query);
-      let isAdmin = false;
-      if (user?.role === "Admin") {
-        isAdmin = true;
-      }
-      res.json({ admin: isAdmin });
     });
 
     // POST API
