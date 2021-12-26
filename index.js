@@ -50,6 +50,12 @@ async function run() {
       const result = await furnituresCollection.insertOne(car);
       res.json(result);
     });
+    // post orders
+    app.post("/orders", async (req, res) => {
+      const order = req.body;
+      const result = await ordersCollection.insertOne(order);
+      res.json(result);
+    });
   } finally {
     // await client.close();
   }
