@@ -79,6 +79,14 @@ async function run() {
       const result = await ordersCollection.deleteOne(query);
       res.json(result);
     });
+
+    // post reviews
+    app.post("/reviews", async (req, res) => {
+      const user = req.body;
+      const result = await reviewsCollection.insertOne(user);
+      console.log(user);
+      res.json(result);
+    });
   } finally {
     // await client.close();
   }
