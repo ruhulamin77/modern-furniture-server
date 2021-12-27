@@ -24,36 +24,51 @@ async function run() {
   try {
     await client.connect();
     const database = client.db("modernFurniture");
-    const furnituresCollection = database.collection("furnitures");
+    const productsCollection = database.collection("products");
     const ordersCollection = database.collection("orders");
     const usersCollection = database.collection("users");
     const reviewsCollection = database.collection("reviews");
 
     // GET API
-    app.get("/furnitures", async (req, res) => {
-      const cursor = furnituresCollection.find({});
-      const furnitures = await cursor.toArray();
-      res.json(furnitures);
+    app.get("/products", async (req, res) => {
+      const cursor = productsCollection.find({});
+      const products = await cursor.toArray();
+      res.json(products);
     });
 
     // get single furniture
-    app.get("/furnitures/:id", async (req, res) => {
+    app.get("/products/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const furniture = await furnituresCollection.findOne(query);
-      res.json(furniture);
+      const products = await productsCollection.findOne(query);
+      res.json(products);
     });
 
     // POST API
-    app.post("/furnitures", async (req, res) => {
+    app.post("/products", async (req, res) => {
       const car = req.body;
-      const result = await furnituresCollection.insertOne(car);
+      const result = await productsCollection.insertOne(car);
       res.json(result);
     });
     // post orders
     app.post("/orders", async (req, res) => {
       const order = req.body;
       const result = await ordersCollection.insertOne(order);
+      res.json(result);
+    });
+
+    // get all orders
+    app.get("/orders", async (req, res) => {
+      const cursor = ordersCollection.find({});
+      const result = await cursor.toArray();
+      res.json(result);
+    });
+    // get filtered orders
+    app.get("/orders/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = ordersCollection.find(query);
+      const result = await cursor.toArray();
       res.json(result);
     });
   } finally {
