@@ -44,6 +44,41 @@ async function run() {
       res.json(products);
     });
 
+    // get all orders
+    app.get("/orders", async (req, res) => {
+      const cursor = ordersCollection.find({});
+      const result = await cursor.toArray();
+      res.json(result);
+    });
+
+    // get filtered orders
+    app.get("/orders/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const cursor = ordersCollection.find(query);
+      const result = await cursor.toArray();
+      res.json(result);
+    });
+
+    // get reviews
+    app.get("/reviews", async (req, res) => {
+      const cursor = reviewsCollection.find({});
+      const result = await cursor.toArray();
+      res.json(result);
+    });
+
+    // get admin user
+    app.get("/users/:email", async (req, res) => {
+      const email = req.params.email;
+      const query = { email: email };
+      const user = await usersCollection.findOne(query);
+      let isAdmin = false;
+      if (user?.role === "Admin") {
+        isAdmin = true;
+      }
+      res.json({ admin: isAdmin });
+    });
+
     // POST API
     app.post("/products", async (req, res) => {
       const car = req.body;
@@ -57,18 +92,62 @@ async function run() {
       res.json(result);
     });
 
-    // get all orders
-    app.get("/orders", async (req, res) => {
-      const cursor = ordersCollection.find({});
-      const result = await cursor.toArray();
+    // post reviews
+    app.post("/reviews", async (req, res) => {
+      const user = req.body;
+      const result = await reviewsCollection.insertOne(user);
+      console.log(user);
       res.json(result);
     });
-    // get filtered orders
-    app.get("/orders/:email", async (req, res) => {
-      const email = req.params.email;
-      const query = { email: email };
-      const cursor = ordersCollection.find(query);
-      const result = await cursor.toArray();
+
+    // post users
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      const result = await usersCollection.insertOne(user);
+      res.json(result);
+    });
+
+    // UPDATE API
+    app.put("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedData = req.body;
+      const query = { _id: ObjectId(id) };
+
+      const options = { upsert: true };
+      const updateDoc = {
+        $set: {
+          status: updatedData.status,
+        },
+      };
+      const result = await ordersCollection.updateOne(
+        query,
+        updateDoc,
+        options
+      );
+      // console.log('updating user with id', result);
+      res.json(result);
+    });
+
+    // update new users
+    app.put("/users", async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email };
+      const options = { upsert: true };
+      const updateDoc = { $set: user };
+      const result = await usersCollection.updateOne(
+        filter,
+        updateDoc,
+        options
+      );
+      res.json(result);
+    });
+
+    // make a admin user
+    app.put("/users/admin", async (req, res) => {
+      const user = req.body;
+      const filter = { email: user.email };
+      const updateDoc = { $set: { role: "Admin" } };
+      const result = await usersCollection.updateOne(filter, updateDoc);
       res.json(result);
     });
 
@@ -80,11 +159,12 @@ async function run() {
       res.json(result);
     });
 
-    // post reviews
-    app.post("/reviews", async (req, res) => {
-      const user = req.body;
-      const result = await reviewsCollection.insertOne(user);
-      console.log(user);
+    // delete product
+    app.delete("/products/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: ObjectId(id) };
+      const result = await productsCollection.deleteOne(query);
+      console.log("hit delete", result);
       res.json(result);
     });
   } finally {
