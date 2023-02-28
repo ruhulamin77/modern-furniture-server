@@ -40,8 +40,8 @@ async function run() {
     app.get("/products/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const products = await productsCollection.findOne(query);
-      res.json(products);
+      const product = await productsCollection.findOne(query);
+      res.json(product);
     });
 
     // get all orders
