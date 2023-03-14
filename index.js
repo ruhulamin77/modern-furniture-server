@@ -174,7 +174,7 @@ async function run() {
 run().catch(console.dir);
 
 app.get('/', (req, res) => {
-  res.send('Hello Modern Furniture!');
+  res.send('Welcome to Modern Furniture!');
 });
 app.get('/hey', (req, res) => {
   res.send('Hey Modern Furniture!');
